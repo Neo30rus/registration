@@ -1,20 +1,35 @@
 <?php
 
-
 function auth($login, $password)
 {
-    var_dump($login, $password);
+    $file = file_get_contents("dr.word");
+    $data = json_decode($file);
+    if (!empty($data)) {
+        foreach ($data as $user) {
+            if ($user->username == $login) {
+                if (password_verify($password, $user->password)) {
+                    session_start();
+                    $_SESSION['user']['login'] = $user->username;
+                    return true;
+                }
+            }
+        }
+    }
+
+
+    return false;
+
 }
 
+
 function registration($login, $password, $password_check)
+
 {
-    if (empty($login))
-    {
+    if (empty($login)) {
         echo "Введите логин";
 
     }
-    if ($password != $password_check)
-    {
+    if ($password != $password_check) {
         echo "Пароли не совпадают";
         return false;
     }
@@ -24,7 +39,7 @@ function registration($login, $password, $password_check)
     $allData = json_decode($dataFromFile);
     var_dump($allData);
     foreach ($allData as $user) {
-        if($user -> login == $login){
+        if ($user->login == $login) {
             echo "Логин занят";
             return false;
         }
@@ -36,8 +51,7 @@ function registration($login, $password, $password_check)
     $jsonData = json_encode($allData);
 
     file_put_contents("user_data.json", $jsonData);
-
-
+       return true;
 
 }
 
